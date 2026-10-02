@@ -157,21 +157,101 @@
             display: block;
         }
 
+        .password-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: rgba(43, 29, 31, 0.35);
+            backdrop-filter: blur(8px);
+        }
+
+        .password-panel {
+            width: min(420px, 100%);
+            padding: 32px;
+            border: 1px solid rgba(181, 82, 106, 0.2);
+            border-radius: 22px;
+            background: linear-gradient(140deg, #fff7ee 0%, #ffeef4 45%, #fff7ee 100%);
+            box-shadow: 0 24px 60px rgba(26, 12, 16, 0.24);
+            color: #2b1d1f;
+            font-family: "Georgia", "Times New Roman", serif;
+        }
+
+        .password-panel h1 {
+            margin: 0 0 8px;
+            color: #b5526a;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .password-panel p {
+            margin: 0 0 22px;
+            text-align: center;
+        }
+
+        .password-panel label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .password-panel input {
+            width: 100%;
+            min-height: 46px;
+            padding: 10px 12px;
+            border: 1px solid rgba(43, 29, 31, 0.3);
+            border-radius: 10px;
+            background: #fff;
+            color: #2b1d1f;
+            font: inherit;
+        }
+
+        .password-panel button {
+            width: 100%;
+            min-height: 46px;
+            margin-top: 14px;
+            border: 0;
+            border-radius: 999px;
+            background: #2b1d1f;
+            color: #fff4f6;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .password-error {
+            min-height: 1.25em;
+            margin: 12px 0 0 !important;
+            color: #9d2947;
+            text-align: left !important;
+        }
+
     </style>
 </head>
 <body>
-    <nav id="siteTabs" class="site-tabs is-hidden" aria-label="Page navigation">
+    <section id="passwordGate" class="password-gate" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
+        <form id="passwordForm" class="password-panel">
+            <h1 id="passwordTitle">A little surprise</h1>
+            <p>Enter the password to continue.</p>
+            <label for="sitePassword">Password</label>
+            <input id="sitePassword" name="password" type="password" autocomplete="current-password" required autofocus>
+            <button type="submit">Unlock</button>
+            <p id="passwordError" class="password-error" role="status" aria-live="polite"></p>
+        </form>
+    </section>
+
+    <nav id="siteTabs" class="site-tabs is-hidden" aria-label="Page navigation" inert>
         <a class="tab-home active" href="index.html" aria-label="Home"><img src="N.png" alt="Home"></a>
         <a href="1.html">Letter</a>
         <a href="2.html">Audio</a>
         <a href="videos.html">Memories</a>
     </nav>
-    <canvas id="confetti" aria-hidden="true"></canvas>
-    <div class="birthday-show is-hidden" id="birthdayShow">
+    <canvas id="confetti" aria-hidden="true" inert></canvas>
+    <div class="birthday-show is-hidden" id="birthdayShow" inert>
         <img src="us.png" alt="United States flag" class="birthday-flag">
         <div class="center-title" id="birthdayWish">Happy 18ᵗʰ Birthday My Pretty Yapper!</div>
     </div>
-    <div class="timer-wrap" id="timerWrap">
+    <div class="timer-wrap" id="timerWrap" inert>
         <div class="timer-value" id="timerValue">Loading...</div>
         <div class="timer-instruction" id="timerInstruction">Think about something to wish.</div>
         <a class="start-button" id="startButton" href="1.html" style="display:none;">Let’s gooooo</a>
@@ -269,7 +349,7 @@
         const timerInstruction = document.getElementById("timerInstruction");
         const siteTabs = document.getElementById("siteTabs");
 
-        const targetTime = Date.now() + 5 * 1000;
+        let targetTime = 0;
 
         function formatCountdown(ms) {
             const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
@@ -295,7 +375,28 @@
             requestAnimationFrame(updateTimer);
         }
 
-        updateTimer();
+        const passwordGate = document.getElementById("passwordGate");
+        const passwordForm = document.getElementById("passwordForm");
+        const sitePassword = document.getElementById("sitePassword");
+        const passwordError = document.getElementById("passwordError");
+
+        passwordForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            if (sitePassword.value !== "Nainaaa") {
+                passwordError.textContent = "That password doesn't match. Try again.";
+                sitePassword.select();
+                return;
+            }
+
+            passwordGate.remove();
+            siteTabs.inert = false;
+            canvas.inert = false;
+            birthdayShow.inert = false;
+            document.getElementById("timerWrap").inert = false;
+            targetTime = Date.now() + 5 * 1000;
+            updateTimer();
+        });
     </script>
 </body>
 </html>
