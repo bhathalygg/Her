@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Nainaaaa!🫶</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: radial-gradient(circle at 20% 20%, #ffe7c7 0%, #ffd2dd 35%, #f6b7c6 70%, #e89aac 100%);
+            overflow: hidden;
+        }
+
+        #confetti {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: none;
+        }
+
+        .center-title {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            font-family: "Georgia", "Times New Roman", serif;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: clamp(28px, 5vw, 56px);
+            letter-spacing: 0.5px;
+        }
+
+        .birthday-show {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            height: 100%;
+        }
+
+        .birthday-show.is-hidden {
+            display: none;
+        }
+
+        .birthday-flag {
+            width: min(220px, 42vw);
+            max-width: 220px;
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(43, 29, 31, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.7);
+        }
+
+        #birthdayWish {
+            color: #2b1d1f;
+        }
+
+        .timer-wrap {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            font-family: "Georgia", "Times New Roman", serif;
+            color: #2b1d1f;
+            gap: 14px;
+        }
+
+        .timer-label {
+            font-size: clamp(16px, 2.2vw, 22px);
+            opacity: 0.85;
+        }
+
+        .timer-value {
+            font-size: clamp(28px, 5vw, 56px);
+            letter-spacing: 0.5px;
+        }
+
+        .timer-instruction {
+            font-size: clamp(30px, 2vw, 18px);
+            max-width: 420px;
+            line-height: 1.6;
+            opacity: 0.85;
+        }
+
+        .start-button {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 999px;
+            background: #2b1d1f;
+            color: #fff4f6;
+            text-decoration: none;
+            font-size: clamp(16px, 2.4vw, 22px);
+            letter-spacing: 0.4px;
+            transform: translateY(4px);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+        }
+
+        .start-button:hover {
+            transform: translateY(0);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+        }
+
+        .site-tabs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(255, 244, 246, 0.88);
+            border-bottom: 1px solid rgba(43, 29, 31, 0.16);
+            backdrop-filter: blur(8px);
+            overflow-x: auto;
+        }
+
+        .site-tabs.is-hidden {
+            display: none;
+        }
+
+        .site-tabs a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(43, 29, 31, 0.2);
+            background: rgba(255, 255, 255, 0.8);
+            color: #2b1d1f;
+            text-decoration: none;
+            font-family: "Georgia", "Times New Roman", serif;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+
+        .site-tabs a.active {
+            background: #2b1d1f;
+            color: #fff4f6;
+            border-color: #2b1d1f;
+        }
+
+        .tab-home img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+    <nav id="siteTabs" class="site-tabs is-hidden" aria-label="Page navigation">
+        <a class="tab-home active" href="index.html" aria-label="Home"><img src="N.png" alt="Home"></a>
+        <a href="1.html">Letter</a>
+        <a href="2.html">Audio</a>
+        <a href="videos.html">Memories</a>
+    </nav>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+    <div class="birthday-show is-hidden" id="birthdayShow">
+        <img src="us.png" alt="United States flag" class="birthday-flag">
+        <div class="center-title" id="birthdayWish">Happy 18ᵗʰ Birthday My Pretty Yapper!</div>
+    </div>
+    <div class="timer-wrap" id="timerWrap">
+        <div class="timer-value" id="timerValue">Loading...</div>
+        <div class="timer-instruction" id="timerInstruction">Think about something to wish.</div>
+        <a class="start-button" id="startButton" href="1.html" style="display:none;">Let’s gooooo</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("confetti");
+        const ctx = canvas.getContext("2d");
+
+        let width = 0;
+        let height = 0;
+        const colors = ["#fff4b0", "#f07c9c", "#f7d6ff", "#ffe066", "#9bf6ff", "#ff99c8"];
+        const confettiCount = 160;
+        const confetti = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function rand(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createPiece() {
+            return {
+                x: rand(0, width),
+                y: rand(-height, 0),
+                w: rand(6, 12),
+                h: rand(8, 16),
+                r: rand(0, Math.PI * 2),
+                tilt: rand(-0.6, 0.6),
+                color: colors[Math.floor(rand(0, colors.length))],
+                speed: rand(1.2, 3.4),
+                drift: rand(-0.8, 0.8),
+                rotation: rand(-0.04, 0.04)
+            };
+        }
+
+        function init() {
+            confetti.length = 0;
+            for (let i = 0; i < confettiCount; i += 1) {
+                confetti.push(createPiece());
+            }
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, width, height);
+
+            confetti.forEach((piece) => {
+                piece.y += piece.speed;
+                piece.x += piece.drift;
+                piece.r += piece.rotation;
+
+                if (piece.y > height + 20) {
+                    piece.y = rand(-height * 0.2, -20);
+                    piece.x = rand(0, width);
+                }
+
+                if (piece.x < -20) piece.x = width + 20;
+                if (piece.x > width + 20) piece.x = -20;
+
+                ctx.save();
+                ctx.translate(piece.x, piece.y);
+                ctx.rotate(piece.r);
+                ctx.fillStyle = piece.color;
+                ctx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
+                ctx.restore();
+            });
+
+            requestAnimationFrame(update);
+        }
+
+        let confettiRunning = false;
+
+        function startConfetti() {
+            if (confettiRunning) return;
+            confettiRunning = true;
+            canvas.style.display = "block";
+            resize();
+            init();
+            update();
+        }
+
+        window.addEventListener("resize", () => {
+            if (!confettiRunning) return;
+            resize();
+            init();
+        });
+
+        const timerValue = document.getElementById("timerValue");
+        const startButton = document.getElementById("startButton");
+        const birthdayShow = document.getElementById("birthdayShow");
+        const birthdayWish = document.getElementById("birthdayWish");
+        const timerInstruction = document.getElementById("timerInstruction");
+        const siteTabs = document.getElementById("siteTabs");
+
+        const targetTime = Date.now() + 5 * 1000;
+
+        function formatCountdown(ms) {
+            const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+            return `${totalSeconds}s`;
+        }
+
+        function updateTimer() {
+            const now = Date.now();
+            const diff = targetTime - now;
+
+            if (diff <= 0) {
+                timerValue.textContent = "";
+                startButton.style.display = "inline-block";
+                birthdayShow.classList.remove("is-hidden");
+                birthdayWish.classList.remove("is-hidden");
+                timerInstruction.style.display = "none";
+                siteTabs.classList.remove("is-hidden");
+                startConfetti();
+                return;
+            }
+
+            timerValue.textContent = formatCountdown(diff);
+            requestAnimationFrame(updateTimer);
+        }
+
+        updateTimer();
+    </script>
+</body>
+</html>
