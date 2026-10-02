@@ -61,35 +61,6 @@
             color: #2b1d1f;
         }
 
-        .timer-wrap {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            display: grid;
-            place-items: center;
-            text-align: center;
-            font-family: "Georgia", "Times New Roman", serif;
-            color: #2b1d1f;
-            gap: 14px;
-        }
-
-        .timer-label {
-            font-size: clamp(16px, 2.2vw, 22px);
-            opacity: 0.85;
-        }
-
-        .timer-value {
-            font-size: clamp(28px, 5vw, 56px);
-            letter-spacing: 0.5px;
-        }
-
-        .timer-instruction {
-            font-size: clamp(30px, 2vw, 18px);
-            max-width: 420px;
-            line-height: 1.6;
-            opacity: 0.85;
-        }
-
         .start-button {
             display: inline-block;
             padding: 12px 28px;
@@ -250,11 +221,7 @@
     <div class="birthday-show is-hidden" id="birthdayShow" inert>
         <img src="us.png" alt="United States flag" class="birthday-flag">
         <div class="center-title" id="birthdayWish">Happy 18ᵗʰ Birthday My Pretty Yapper!</div>
-    </div>
-    <div class="timer-wrap" id="timerWrap" inert>
-        <div class="timer-value" id="timerValue">Loading...</div>
-        <div class="timer-instruction" id="timerInstruction">Think about something to wish.</div>
-        <a class="start-button" id="startButton" href="1.html" style="display:none;">Let’s gooooo</a>
+        <a class="start-button" id="startButton" href="1.html">Let’s gooooo</a>
     </div>
 
     <script>
@@ -342,38 +309,8 @@
             init();
         });
 
-        const timerValue = document.getElementById("timerValue");
-        const startButton = document.getElementById("startButton");
         const birthdayShow = document.getElementById("birthdayShow");
-        const birthdayWish = document.getElementById("birthdayWish");
-        const timerInstruction = document.getElementById("timerInstruction");
         const siteTabs = document.getElementById("siteTabs");
-
-        let targetTime = 0;
-
-        function formatCountdown(ms) {
-            const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
-            return `${totalSeconds}s`;
-        }
-
-        function updateTimer() {
-            const now = Date.now();
-            const diff = targetTime - now;
-
-            if (diff <= 0) {
-                timerValue.textContent = "";
-                startButton.style.display = "inline-block";
-                birthdayShow.classList.remove("is-hidden");
-                birthdayWish.classList.remove("is-hidden");
-                timerInstruction.style.display = "none";
-                siteTabs.classList.remove("is-hidden");
-                startConfetti();
-                return;
-            }
-
-            timerValue.textContent = formatCountdown(diff);
-            requestAnimationFrame(updateTimer);
-        }
 
         const passwordGate = document.getElementById("passwordGate");
         const passwordForm = document.getElementById("passwordForm");
@@ -393,9 +330,9 @@
             siteTabs.inert = false;
             canvas.inert = false;
             birthdayShow.inert = false;
-            document.getElementById("timerWrap").inert = false;
-            targetTime = Date.now() + 5 * 1000;
-            updateTimer();
+            birthdayShow.classList.remove("is-hidden");
+            siteTabs.classList.remove("is-hidden");
+            startConfetti();
         });
     </script>
 </body>
